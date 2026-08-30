@@ -1,0 +1,41 @@
+# PowerShell generated files
+*.log
+*.tmp
+*.temp
+*.bak
+*.zip
+
+# Secrets and local configuration
+.env
+.env.*
+*.secret
+*.secrets
+secrets/
+credentials/
+
+# Certificates and keys
+*.pfx
+*.p12
+*.key
+*.pem
+
+# Exported data
+Exports/
+exports/
+output/
+Output/
+
+# IDE / OS
+.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Test results
+TestResults/
+*.trx
+
+# PowerShell module/build output
+bin/
+obj/
