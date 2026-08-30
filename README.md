@@ -12,38 +12,36 @@ Practical PowerShell scripts, tips, examples and best practices for Windows, Act
 | `Tips/` | Short guides, troubleshooting notes and best practices |
 | `Snippets/` | Small reusable PowerShell examples and one-liners |
 | `Modules/` | Reusable PowerShell modules and functions |
-| `Examples/` | Example configurations and usage scenarios |
+| `Examples/` | Sanitized example configurations and usage scenarios |
 | `Tests/` | Pester and validation tests |
-| `docs/` | Documentation, standards and templates |
+| `Templates/` | Standard PowerShell script template and documentation |
+| `docs/` | Coding standards and repository documentation |
 
-## Main topics
+## Script categories
 
-- Active Directory administration, migration and security
-- Microsoft 365 and Entra ID
-- Exchange Online, Intune, Teams and SharePoint
-- Windows Server and Windows Client
-- Hyper-V and virtualization
-- PKI and Active Directory Certificate Services
-- Security auditing and hardening
-- Network administration and diagnostics
-- Backup, migration and automation
-- General PowerShell utilities and troubleshooting
+`Scripts/` is organized into Active Directory, Microsoft 365, Windows Server, Windows Client, Hyper-V, Security, PKI, Network, Backup, Migration and Utilities. Each technology area contains additional subcategories for easier navigation.
+
+## Tips categories
+
+`Tips/` contains Active Directory, Microsoft 365, PowerShell, Windows, Security and Troubleshooting notes.
+
+## Start a new script
+
+Use [`Templates/PowerShell-Script-Template.ps1`](Templates/PowerShell-Script-Template.ps1) as the standard starting point and read [`Templates/README.md`](Templates/README.md) before publishing a new script.
 
 ## Script quality standard
 
-Scripts published in this repository should include clear comment-based help, prerequisites, parameters, examples, error handling and logging where appropriate. Destructive operations should support safe preview mechanisms such as `-WhatIf` whenever technically possible.
+Scripts published in this repository should include clear comment-based help, prerequisites, parameters, examples, error handling and logging where appropriate. Destructive or modifying operations should support safe preview mechanisms such as `-WhatIf` whenever technically possible.
 
 ## Security and privacy
 
-Never publish customer-specific or confidential information. Before committing a script, remove or replace passwords, API keys, access tokens, tenant IDs, customer names, internal domains, public/private IP addresses, e-mail addresses, certificate secrets and environment-specific paths.
+Never publish customer-specific or confidential information. Before committing a script, remove or replace passwords, API keys, access tokens, tenant IDs, customer names, internal domains, host names, sensitive IP addresses, e-mail addresses, private certificate material and environment-specific paths.
 
-See [SECURITY.md](SECURITY.md) for the repository security policy and [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and publishing guidelines.
+See [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/Coding-Standards.md](docs/Coding-Standards.md).
 
 ## Requirements
 
-Most modern scripts target PowerShell 7 where possible. Some Windows administration functions require Windows PowerShell 5.1 or Windows-specific modules such as ActiveDirectory.
-
-Each script should document its own requirements.
+Most modern scripts target PowerShell 7 where possible. Some Windows administration functions require Windows PowerShell 5.1 or Windows-specific modules such as ActiveDirectory. Each script must document its own requirements.
 
 ## Disclaimer
 
