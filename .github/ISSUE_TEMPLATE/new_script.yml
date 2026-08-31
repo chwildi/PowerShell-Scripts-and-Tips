@@ -1,0 +1,66 @@
+name: New script proposal
+description: Propose a new customer-neutral PowerShell script
+title: "[New Script]: "
+labels: ["new-script"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Proposed script name
+      placeholder: Get-ExampleInventory.ps1
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Active Directory
+        - Backup
+        - Hyper-V
+        - Microsoft 365 / Entra ID
+        - Migration
+        - Network
+        - PKI
+        - Security
+        - Utilities
+        - Windows Client
+        - Windows Server
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose and use case
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements / modules
+      placeholder: ActiveDirectory module, Windows only, administrative rights, etc.
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Expected risk
+      options:
+        - Low - read-only
+        - Medium - controlled changes
+        - High - privileged/destructive operations
+        - Unknown
+    validations:
+      required: true
+  - type: checkboxes
+    id: standards
+    attributes:
+      label: Repository standards
+      options:
+        - label: Safe Configuration Block and safe parameterless defaults are planned.
+          required: true
+        - label: Optional parameters will override configuration values where appropriate.
+          required: true
+        - label: A matching -TEST.ps1 and documentation will be created.
+          required: true
+        - label: No customer-specific or secret information will be committed.
+          required: true
