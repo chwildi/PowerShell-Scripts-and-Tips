@@ -3,7 +3,7 @@
 .SYNOPSIS
     Static quality tests for Initialize-GitHubRepositoryWiki.ps1.
 .NOTES
-    Version: 1.0.0.0
+    Version: 1.0.2.0
     License: MIT
 #>
 [CmdletBinding()]
@@ -16,7 +16,7 @@ $ErrorActionPreference='Stop'
 # ============================================================================
 # CONFIGURATION BLOCK
 # ============================================================================
-$Configuration=[ordered]@{ScriptPath=$ScriptPath;RequirePSScriptAnalyzer=[bool]$RequirePSScriptAnalyzer;RequiredVersion='1.0.0.0'}
+$Configuration=[ordered]@{ScriptPath=$ScriptPath;RequirePSScriptAnalyzer=[bool]$RequirePSScriptAnalyzer;RequiredVersion='1.0.2.0'}
 $Results=[System.Collections.Generic.List[object]]::new()
 function Add-WikiTestResult{[CmdletBinding()]param([Parameter(Mandatory)][string]$Name,[Parameter(Mandatory)][bool]$Passed,[Parameter(Mandatory)][string]$Detail);$Results.Add([pscustomobject]@{Test=$Name;Passed=$Passed;Detail=$Detail})}
 if(-not(Test-Path -LiteralPath $Configuration.ScriptPath -PathType Leaf)){throw "Script not found: $($Configuration.ScriptPath)"}
@@ -32,6 +32,8 @@ Add-WikiTestResult 'Explicit push opt-in' (($content -match 'Push=\$false') -and
 Add-WikiTestResult 'Wiki URL construction' ($content -match '\.wiki\.git') 'Expected GitHub wiki Git URL'
 Add-WikiTestResult 'Sidebar generation' ($content -match '_Sidebar\.md') 'Expected generated navigation'
 Add-WikiTestResult 'Footer generation' ($content -match '_Footer\.md') 'Expected generated footer'
+Add-WikiTestResult 'Git command output isolated' (($content -match '\$null=& git add') -and ($content -match '\$null=& git commit') -and ($content -match '\$null=& git push')) 'Native Git output must not pollute the structured result pipeline'
+Add-WikiTestResult 'Structured publish result' (($content -match 'Changed=\$true') -and ($content -match 'Committed=\$committed') -and ($content -match 'Pushed=\$pushed')) 'Publish function must return a stable result object'
 Add-WikiTestResult 'Version marker' ($content -match [regex]::Escape($Configuration.RequiredVersion)) "Expected version $($Configuration.RequiredVersion)"
 Add-WikiTestResult 'No obvious secrets' (-not($content -match '(?i)(password\s*=|clientsecret\s*=|api[_-]?key\s*=|token\s*=\s*["''][^"'']+)')) 'Basic secret scan'
 $analyzer=Get-Module -ListAvailable PSScriptAnalyzer|Sort-Object Version -Descending|Select-Object -First 1
