@@ -1,0 +1,44 @@
+name: Feature / improvement
+description: Suggest an improvement to an existing script or repository component
+title: "[Enhancement]: "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Script / component
+      placeholder: Scripts/Active-Directory/...
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: Describe the problem or improvement goal, not only the proposed implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the desired behavior, parameters, output or workflow.
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Estimated risk
+      options:
+        - Low
+        - Medium
+        - High
+        - Unknown
+    validations:
+      required: true
+  - type: checkboxes
+    id: quality
+    attributes:
+      label: Quality considerations
+      options:
+        - label: The change should remain customer-neutral.
+          required: true
+        - label: Tests and documentation should be updated with the change.
+          required: true
