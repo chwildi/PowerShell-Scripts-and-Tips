@@ -1,0 +1,104 @@
+name: PowerShell Quality
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.ps1'
+      - '**/*.psm1'
+      - '**/*.psd1'
+      - '.github/workflows/powershell-quality.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.ps1'
+      - '**/*.psm1'
+      - '**/*.psd1'
+      - '.github/workflows/powershell-quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  powershell-quality:
+    name: Syntax, Analyzer and Tests
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show PowerShell version
+        shell: pwsh
+        run: $PSVersionTable
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -AllowClobber
+          Import-Module PSScriptAnalyzer -Force
+          Get-Module PSScriptAnalyzer | Select-Object Name, Version
+
+      - name: Parse PowerShell files
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = Get-ChildItem -Path . -Recurse -File | Where-Object { $_.Extension -in '.ps1', '.psm1', '.psd1' }
+          $failed = $false
+
+          foreach ($file in $files) {
+              Write-Host "Parsing $($file.FullName)"
+              $tokens = $null
+              $errors = $null
+              [void][System.Management.Automation.Language.Parser]::ParseFile(
+                  $file.FullName,
+                  [ref]$tokens,
+                  [ref]$errors
+              )
+
+              if ($errors.Count -gt 0) {
+                  $failed = $true
+                  foreach ($parseError in $errors) {
+                      Write-Error "$($file.FullName): $($parseError.Message)"
+                  }
+              }
+          }
+
+          if ($failed) {
+              throw 'PowerShell parser errors were found.'
+          }
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $targets = @('Scripts', 'Modules', 'Snippets', 'Tests', 'Templates') | Where-Object { Test-Path $_ }
+          $results = foreach ($target in $targets) {
+              Invoke-ScriptAnalyzer -Path $target -Recurse -Severity Error,Warning
+          }
+
+          if ($results) {
+              $results | Format-Table RuleName, Severity, ScriptName, Line, Message -AutoSize | Out-String | Write-Host
+              throw "PSScriptAnalyzer found $(@($results).Count) Error/Warning finding(s)."
+          }
+
+      - name: Run repository TEST scripts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tests = Get-ChildItem -Path ./Tests -Recurse -Filter '*-TEST.ps1' -File -ErrorAction SilentlyContinue
+
+          if (-not $tests) {
+              Write-Host 'No *-TEST.ps1 files found.'
+              exit 0
+          }
+
+          foreach ($test in $tests) {
+              Write-Host "Running $($test.FullName)"
+              & $test.FullName -RequirePSScriptAnalyzer
+              if ($LASTEXITCODE -ne 0) {
+                  throw "Test script failed: $($test.FullName)"
+              }
+          }
