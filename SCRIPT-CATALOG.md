@@ -15,6 +15,12 @@ Central catalog for scripts published in this repository.
 
 Each script should document: PowerShell version, prerequisites, configuration, administrative rights, WhatIf support, test script, PSScriptAnalyzer status, security considerations and documentation.
 
+## Active Directory
+
+| Script | Purpose | Version | PowerShell | Status | WhatIf | Test | Risk | Documentation |
+|---|---|---:|---:|---|---|---|---|---|
+| [Find-ADUnusedGroups.ps1](Scripts/Active-Directory/Groups/Find-ADUnusedGroups.ps1) | Read-only analysis of potentially unused AD groups including nested membership, LAPS, AD delegations, GPO and optional SMB references | 1.0.0.1 | 7+ | Testing | N/A (read-only) | [TEST](Tests/Active-Directory/Groups/Find-ADUnusedGroups-TEST.ps1) | Low / analysis | [Guide](docs/Find-ADUnusedGroups.md) |
+
 ## Migration
 
 | Script | Purpose | Version | PowerShell | Status | WhatIf | Test | Risk | Documentation |
