@@ -21,6 +21,12 @@ Each script should document: PowerShell version, prerequisites, configuration, a
 |---|---|---:|---:|---|---|---|---|---|
 | [Migriere-WindowsBenutzer.ps1](Scripts/Migration/Migriere-WindowsBenutzer.ps1) | Backup and restore local Windows user data for client/domain migrations | 2.0.0.0 | 7+ | Stable | Yes | [TEST](Tests/Migration/Migriere-WindowsBenutzer-TEST.ps1) | Medium | [Guide](docs/Migriere-WindowsBenutzer.md) |
 
+## Utilities
+
+| Script | Purpose | Version | PowerShell | Status | WhatIf | Test | Risk | Documentation |
+|---|---|---:|---:|---|---|---|---|---|
+| [Initialize-GitHubRepositoryWiki.ps1](Scripts/Utilities/Initialize-GitHubRepositoryWiki.ps1) | Initialize and synchronize a GitHub Wiki from versioned repository documentation | 1.0.0.0 | 7+ | Testing | Yes | [TEST](Tests/Utilities/Initialize-GitHubRepositoryWiki-TEST.ps1) | Medium | [Guide](docs/Initialize-GitHubRepositoryWiki.md) |
+
 ## Categories
 
 - Active Directory
