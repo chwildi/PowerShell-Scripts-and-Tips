@@ -12,6 +12,10 @@ Welcome to the knowledge base for this PowerShell repository. This documentation
 
 ## Script documentation
 
+### Active Directory
+
+- [Find-ADUnusedGroups](Find-ADUnusedGroups.md) — read-only analysis of potentially unused or orphaned AD groups, including LAPS, AD delegation, nesting and GPO usage signals
+
 ### Migration
 
 - [Migriere-WindowsBenutzer](Migriere-WindowsBenutzer.md) — Windows user-data backup and restore for migration scenarios
