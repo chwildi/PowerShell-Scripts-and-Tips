@@ -8,10 +8,10 @@
 
     Das Skript erkennt den lokalen Repository-Stamm automatisch mit "git rev-parse --show-toplevel",
     wenn -RepositoryRoot nicht angegeben wurde. Fehlende Quelldateien werden nur protokolliert und
-    fuehren nicht mehr zu einem Abbruch bei der Sidebar-Erstellung.
+    fuehren nicht zu einem Abbruch bei der Sidebar-Erstellung.
 .NOTES
     Author  : Hubert Inderwildi
-    Version : 1.0.1.0
+    Version : 1.0.2.0
     License : MIT
     PowerShell: 7+
 #>
@@ -122,16 +122,33 @@ function Publish-WikiChanges{
     param([Parameter(Mandatory)][string]$WorkingDirectory,[Parameter(Mandatory)][bool]$Push)
     Push-Location $WorkingDirectory
     try{
-        & git add --all
-        $status=& git status --porcelain
-        if(-not $status){return [pscustomobject]@{Changed=$false;Committed=$false;Pushed=$false;Detail='No wiki changes detected'}}
+        $null=& git add --all 2>&1
+        if($LASTEXITCODE -ne 0){throw 'Git add failed.'}
+        $status=@(& git status --porcelain 2>$null)
+        if($LASTEXITCODE -ne 0){throw 'Git status failed.'}
+        if($status.Count -eq 0){return [pscustomobject]@{Changed=$false;Committed=$false;Pushed=$false;Detail='No wiki changes detected'}}
+
+        $committed=$false
         if($PSCmdlet.ShouldProcess($WorkingDirectory,'Commit wiki changes')){
-            & git commit -m 'Sync wiki from repository documentation'
+            $null=& git commit -m 'Sync wiki from repository documentation' 2>&1
             if($LASTEXITCODE -ne 0){throw 'Git commit failed.'}
+            $committed=$true
         }
+
         $pushed=$false
-        if($Push){if($PSCmdlet.ShouldProcess('origin','Push wiki changes')){& git push origin HEAD;if($LASTEXITCODE -ne 0){throw 'Git push failed.'};$pushed=$true}}
-        [pscustomobject]@{Changed=$true;Committed=$true;Pushed=$pushed;Detail=$(if($Push){'Wiki changes committed and pushed'}else{'Wiki changes committed locally; use -Push to publish'})}
+        if($Push -and $committed){
+            if($PSCmdlet.ShouldProcess('origin','Push wiki changes')){
+                $null=& git push origin HEAD 2>&1
+                if($LASTEXITCODE -ne 0){throw 'Git push failed.'}
+                $pushed=$true
+            }
+        }
+        return [pscustomobject]@{
+            Changed=$true
+            Committed=$committed
+            Pushed=$pushed
+            Detail=$(if($pushed){'Wiki changes committed and pushed'}elseif($committed){'Wiki changes committed locally; use -Push to publish'}else{'Wiki changes detected; no commit performed'})
+        }
     }finally{Pop-Location}
 }
 function Invoke-GitHubRepositoryWiki{
@@ -148,7 +165,8 @@ function Invoke-GitHubRepositoryWiki{
     Initialize-WikiWorkingCopy -WikiUrl $wikiUrl -WorkingDirectory $Settings.WorkingDirectory -Mode $Settings.Mode -WhatIf:$WhatIfPreference
     $pages=@(Copy-WikiSources -RepositoryRoot $Settings.RepositoryRoot -WorkingDirectory $Settings.WorkingDirectory -SourceMap $Settings.SourceMap -Repository $Settings.Repository -WhatIf:$WhatIfPreference)
     $result=Publish-WikiChanges -WorkingDirectory $Settings.WorkingDirectory -Push ([bool]$Settings.Push) -WhatIf:$WhatIfPreference
-    [pscustomobject]@{Mode=$Settings.Mode;Pages=$pages;Changed=$result.Changed;Committed=$result.Committed;Pushed=$result.Pushed;Detail=$result.Detail}
+    if($null -eq $result){throw 'Wiki publish did not return a result object.'}
+    [pscustomobject]@{Mode=$Settings.Mode;Pages=$pages;Changed=[bool]$result.Changed;Committed=[bool]$result.Committed;Pushed=[bool]$result.Pushed;Detail=[string]$result.Detail}
     if(-not $Settings.KeepWorkingDirectory -and -not $WhatIfPreference -and (Test-Path -LiteralPath $Settings.WorkingDirectory)){Remove-Item -LiteralPath $Settings.WorkingDirectory -Recurse -Force}
 }
 Invoke-GitHubRepositoryWiki -Settings $Configuration -WhatIf:$WhatIfPreference
