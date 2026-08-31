@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a reproducible problem in a script, module or repository component
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Do not include passwords, tokens, customer data, internal domains or other confidential information.
+  - type: input
+    id: component
+    attributes:
+      label: Script / component
+      description: File or component affected by the problem.
+      placeholder: Scripts/Migration/Migriere-WindowsBenutzer.ps1
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Script version
+      placeholder: 2.0.0.0
+  - type: input
+    id: powershell
+    attributes:
+      label: PowerShell version
+      placeholder: PowerShell 7.x
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem description
+      description: What happened and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Provide sanitized steps and commands only.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Sanitized error / log output
+      render: shell
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Security confirmation
+      options:
+        - label: I removed passwords, tokens, customer names, tenant IDs, internal domains and other confidential data.
+          required: true
